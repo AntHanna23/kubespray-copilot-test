@@ -1,0 +1,80 @@
+---
+name: Copilot Learning & Project Management
+description: Learn more about GitHub Copilot and how to use it for project management workflows
+labels: kind/documentation, copilot
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Learn about GitHub Copilot for Project Management
+        
+        Use this template to document your learning journey with GitHub Copilot and explore how it can enhance project management workflows.
+  
+  - type: textarea
+    id: learning-goals
+    attributes:
+      label: Learning Goals
+      description: What aspects of Copilot would you like to learn more about?
+      placeholder: |
+        Examples:
+        - Understanding Copilot's code suggestions
+        - Using Copilot for issue triage
+        - Automating project workflows with Copilot
+        - Leveraging Copilot for documentation
+    validations:
+      required: true
+  
+  - type: textarea
+    id: project-management-use-cases
+    attributes:
+      label: Project Management Use Cases
+      description: What project management workflows do you want to improve with Copilot?
+      placeholder: |
+        Examples:
+        - Issue tracking and labeling
+        - Pull request reviews
+        - Release planning
+        - Sprint planning and management
+        - Documentation generation
+    validations:
+      required: true
+  
+  - type: textarea
+    id: current-challenges
+    attributes:
+      label: Current Challenges
+      description: What challenges are you facing in your current project management workflows?
+      placeholder: Describe any pain points or areas where you think Copilot could help
+    validations:
+      required: false
+  
+  - type: textarea
+    id: resources-needed
+    attributes:
+      label: Resources Needed
+      description: What resources would help you learn more effectively?
+      placeholder: |
+        Examples:
+        - Documentation links
+        - Tutorial videos
+        - Example workflows
+        - Best practices guides
+    validations:
+      required: false
+  
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How will you know when you've achieved your learning goals?
+      placeholder: Define what success looks like for your Copilot learning journey
+    validations:
+      required: false
+  
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Any other information or context you'd like to share
+    validations:
+      required: false
