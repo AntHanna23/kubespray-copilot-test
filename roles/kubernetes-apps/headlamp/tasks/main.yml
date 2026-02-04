@@ -1,0 +1,83 @@
+---
+- name: Kubernetes Apps | Download yq
+  include_tasks: "../../../download/tasks/download_file.yml"
+  vars:
+    download: "{{ download_defaults | combine(downloads.yq) }}"
+
+- name: Kubernetes Apps | Copy yq binary from download dir
+  ansible.posix.synchronize:
+    src: "{{ downloads.yq.dest }}"
+    dest: "{{ bin_dir }}/yq"
+    compress: false
+    perms: true
+    owner: false
+    group: false
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Kubernetes Apps | Set Headlamp template list
+  set_fact:
+    headlamp_templates:
+      - name: namespace
+        file: headlamp-namespace.yml
+      - name: install
+        file: "{{ downloads.headlamp_install.dest | basename }}"
+        namespace: "{{ headlamp_namespace }}"
+        download: "{{ downloads.headlamp_install }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"
+
+- name: Kubernetes Apps | Download Headlamp remote manifests
+  include_tasks: "../../../download/tasks/download_file.yml"
+  vars:
+    download: "{{ download_defaults | combine(item.download) }}"
+  with_items: "{{ headlamp_templates | selectattr('download', 'defined') | list }}"
+  loop_control:
+    label: "{{ item.file }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"
+
+- name: Kubernetes Apps | Copy Headlamp remote manifests from download dir
+  ansible.posix.synchronize:
+    src: "{{ local_release_dir }}/{{ item.file }}"
+    dest: "{{ kube_config_dir }}/{{ item.file }}"
+    compress: false
+    perms: true
+    owner: false
+    group: false
+  delegate_to: "{{ inventory_hostname }}"
+  with_items: "{{ headlamp_templates | selectattr('download', 'defined') | list }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"
+
+- name: Kubernetes Apps | Set Headlamp namespace for remote manifests
+  become: true
+  command: |
+    {{ bin_dir }}/yq eval-all -i '.metadata.namespace="{{ headlamp_namespace }}"' {{ kube_config_dir }}/{{ item.file }}
+  with_items: "{{ headlamp_templates | selectattr('download', 'defined') | list }}"
+  loop_control:
+    label: "{{ item.file }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"
+
+- name: Kubernetes Apps | Create Headlamp manifests from templates
+  become: true
+  template:
+    src: "{{ item.file }}.j2"
+    dest: "{{ kube_config_dir }}/{{ item.file }}"
+    mode: "0644"
+  with_items: "{{ headlamp_templates | selectattr('download', 'undefined') | list }}"
+  loop_control:
+    label: "{{ item.file }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"
+
+- name: Kubernetes Apps | Install Headlamp
+  become: true
+  kube:
+    name: Headlamp
+    kubectl: "{{ bin_dir }}/kubectl"
+    filename: "{{ kube_config_dir }}/{{ item.file }}"
+    state: latest
+  with_items: "{{ headlamp_templates }}"
+  when:
+    - "inventory_hostname == groups['kube_control_plane'][0]"

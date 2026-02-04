@@ -120,6 +120,13 @@ dependencies:
     tags:
       - argocd
 
+  - role: kubernetes-apps/headlamp
+    when:
+      - headlamp_enabled
+      - inventory_hostname == groups['kube_control_plane'][0]
+    tags:
+      - headlamp
+
   - role: kubernetes-apps/scheduler_plugins
     when:
       - scheduler_plugins_enabled
