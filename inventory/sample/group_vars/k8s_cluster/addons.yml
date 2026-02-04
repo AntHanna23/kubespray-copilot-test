@@ -219,6 +219,12 @@ argocd_enabled: false
 # Use the following var to set admin password
 # argocd_admin_password: "password"
 
+# Headlamp - A Kubernetes web UI
+# Headlamp is a GUI interface for viewing Kubernetes clusters, similar to Kubernetes Dashboard
+# but uses WebSockets for improved performance and responsiveness
+headlamp_enabled: false
+# headlamp_namespace: headlamp
+
 # The plugin manager for kubectl
 
 # Kube VIP
